@@ -22,6 +22,9 @@ setup(
         'console_scripts': [
             'qos_publisher = qos_test.qos_publisher:main',
             'qos_subscriber = qos_test.qos_subscriber:main',
+            'qos_reliability_publisher = qos_test.qos_reliability_publisher:main',
+            'qos_reliability_subscriber = qos_test.qos_reliability_subscriber:main',
+
         ],
     },
 )
