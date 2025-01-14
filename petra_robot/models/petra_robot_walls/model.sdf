@@ -223,29 +223,6 @@
           </mesh>
         </geometry>
       </collision>
-      <sensor name="lidar" type="gpu_lidar">
-        <!-- <pose>0.00174 0.00064 0.0959 0 0 0</pose> -->
-        <lidar>
-          <scan>
-            <horizontal>
-              <samples>400</samples>
-              <resolution>1</resolution>
-              <min_angle>-1.5707</min_angle>
-              <max_angle>1.5707</max_angle>
-            </horizontal>
-          </scan>
-          <range>
-            <min>0.15</min>
-            <max>25</max>
-            <resolution>0.01</resolution>
-          </range>
-        </lidar>
-        <gz_frame_id>lidar_link</gz_frame_id>
-        <topic>scan</topic>
-        <alwaysOn>1</alwaysOn>
-        <visualize>true</visualize>
-        <update_rate>10</update_rate>
-      </sensor>
     </link> 
     <joint name="lidar_joint" type="fixed">
       <parent>lidar_base_link</parent>
@@ -253,7 +230,7 @@
     </joint>
 
     <link name="camera_link">
-      <pose relative_to="base_link">-0.2 0 0.03 0 0 0</pose>
+    <pose relative_to="base_link">-0.2 0 0.03 0 0 0</pose>
       <inertial>
         <mass>0.5</mass>
         <inertia>
@@ -280,33 +257,169 @@
             </box>
         </geometry>
       </collision>
-
-      <sensor name="camera" type="camera">
-        <!-- <pose>0.1284 0 0.07444 0 0 0</pose> -->
-        <camera>
-          <horizontal_fov>1.367</horizontal_fov>
-          <image>
-            <width>640</width>
-            <height>480</height>
-          </image>
-          <clip>
-            <near>0.05</near>
-            <far>200</far>
-          </clip>
-        </camera>
-        <!-- Set frame ID appropriately, typically 'camera_link' -->
-        <gz_frame_id>camera_link</gz_frame_id>
-        <always_on>1</always_on>
-        <update_rate>10</update_rate>
-        <visualize>1</visualize>
-        <topic>rgb_image</topic>
-      </sensor>
     </link>
     <joint name="camera_joint" type="fixed">
       <parent>base_link</parent>
       <child>camera_link</child>
     </joint>
+    <model name="box1">
+        <static>true</static>
+        <pose>2 2 0.5 0 0 0</pose>
+        <link name="link">
+            <collision name="collision">
+                <geometry>
+                    <box>
+                        <size>1 1 1</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <box>
+                        <size>1 1 1</size>
+                    </box>
+                </geometry>
+                <material>
+                    <ambient>1 0 0 1</ambient>
+                    <diffuse>1 0 0 1</diffuse>
+                    <specular>1 0 0 1</specular>
+                </material>
+            </visual>
+        </link>
+    </model>
 
+    <model name="cylinder1">
+        <static>true</static>
+        <pose>-2 -2 0.5 0 0 0</pose>
+        <link name="link">
+            <collision name="collision">
+                <geometry>
+                    <cylinder>
+                        <radius>0.5</radius>
+                        <length>1.0</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <cylinder>
+                        <radius>0.5</radius>
+                        <length>1.0</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <ambient>0 1 0 1</ambient>
+                    <diffuse>0 1 0 1</diffuse>
+                    <specular>0 1 0 1</specular>
+                </material>
+            </visual>
+        </link>
+    </model>
+
+    <model name="north_wall">
+        <static>true</static>
+        <pose>0 5 1 0 0 0</pose>
+        <link name="link">
+            <collision name="collision">
+                <geometry>
+                    <box>
+                        <size>10 0.2 2</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <box>
+                        <size>10 0.2 2</size>
+                    </box>
+                </geometry>
+                <material>
+                    <ambient>0.7 0.7 0.7 1</ambient>
+                    <diffuse>0.7 0.7 0.7 1</diffuse>
+                    <specular>0.7 0.7 0.7 1</specular>
+                </material>
+            </visual>
+        </link>
+    </model>
+
+    <model name="south_wall">
+        <static>true</static>
+        <pose>0 -5 1 0 0 0</pose>
+        <link name="link">
+            <collision name="collision">
+                <geometry>
+                    <box>
+                        <size>10 0.2 2</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <box>
+                        <size>10 0.2 2</size>
+                    </box>
+                </geometry>
+                <material>
+                    <ambient>0.7 0.7 0.7 1</ambient>
+                    <diffuse>0.7 0.7 0.7 1</diffuse>
+                    <specular>0.7 0.7 0.7 1</specular>
+                </material>
+            </visual>
+        </link>
+    </model>
+
+    <model name="east_wall">
+        <static>true</static>
+        <pose>5 0 1 0 0 1.5708</pose>
+        <link name="link">
+            <collision name="collision">
+                <geometry>
+                    <box>
+                        <size>10 0.2 2</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <box>
+                        <size>10 0.2 2</size>
+                    </box>
+                </geometry>
+                <material>
+                    <ambient>0.7 0.7 0.7 1</ambient>
+                    <diffuse>0.7 0.7 0.7 1</diffuse>
+                    <specular>0.7 0.7 0.7 1</specular>
+                </material>
+            </visual>
+        </link>
+    </model>
+
+    <model name="west_wall">
+        <static>true</static>
+        <pose>-5 0 1 0 0 1.5708</pose>
+        <link name="link">
+            <collision name="collision">
+                <geometry>
+                    <box>
+                        <size>10 0.2 2</size>
+                    </box>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <box>
+                        <size>10 0.2 2</size>
+                    </box>
+                </geometry>
+                <material>
+                    <ambient>0.7 0.7 0.7 1</ambient>
+                    <diffuse>0.7 0.7 0.7 1</diffuse>
+                    <specular>0.7 0.7 0.7 1</specular>
+                </material>
+            </visual>
+        </link>
+    </model>
+    
     <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
         <topic>cmd_vel</topic> <!-- Topic for velocity commands to control the robot -->
         <left_joint>left_wheel_joint</left_joint> <!-- Name of the left wheel joint -->
@@ -319,3 +432,7 @@
   </model>
 
 </sdf>
+
+
+
+            <!-- <uri>package://petra_robot/meshes/2d_lidar.STL</uri> -->

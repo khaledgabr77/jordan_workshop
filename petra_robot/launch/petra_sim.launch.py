@@ -73,7 +73,7 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         parameters=[{
-            'config_file': os.path.join(pkg_project_description, 'config', 'petra.yaml'),
+            'config_file': os.path.join(pkg_project_description, 'config', 'petra_robot.yaml'),
             'qos_overrides./tf_static.publisher.durability': 'transient_local',
         }],
         output='screen'
