@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
-<robot name="petra_robot">
+<robot name="petra_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find petra_robot)/urdf/petra.gazebo" />
 
     <link name="base_link">
         <inertial>
@@ -181,4 +182,66 @@
         <origin xyz="0 0 0.065" rpy="0 0 0"/>
     </joint>
 
+    <link name="camera_link">
+      <pose>0 0 0 0 0 0</pose>
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="1e-6" ixy="0" ixz="0"
+          iyy="1e-6" iyz="0"
+          izz="1e-6"/>
+    </inertial>
+    <collision name='collision'>
+      <origin xyz="0 0 0" rpy="0 0 0"/> 
+      <geometry>
+        <box size=".03 .03 .03"/>
+      </geometry>
+    </collision>
+
+    <visual name='camera_link_visual'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size=".03 .03 .03"/>
+      </geometry>
+    </visual>
+    </link>
+
+    <joint name="camera_joint" type="fixed"> 
+      <origin xyz="0.2 0 0.05" rpy="0 0 0"/>
+      <child link="camera_link"/>
+      <parent link="base_link"/>
+      <axis xyz="0 1 0" />
+    </joint>
+
+    <joint type="fixed" name="camera_optical_joint">
+        <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+        <child link="camera_link_optical"/>
+        <parent link="camera_link"/>
+    </joint>
+
+    <link name="camera_link_optical">
+    </link>
+    <!-- <gazebo reference="left_wheel">
+        <mu1>0.2</mu1>
+        <mu2>0.2</mu2>
+        <kp>1000000.0</kp>
+        <kd>100.0</kd>
+        <minDepth>0.0001</minDepth>
+        <maxVel>1.0</maxVel>
+    </gazebo>
+
+    <gazebo reference="right_wheel">
+        <mu1>0.2</mu1>
+        <mu2>0.2</mu2>
+        <kp>1000000.0</kp>
+        <kd>100.0</kd>
+        <minDepth>0.0001</minDepth>
+        <maxVel>1.0</maxVel>
+    </gazebo>
+
+    <gazebo reference="base_link">
+        <mu1>0.000002</mu1>
+        <mu2>0.000002</mu2>
+    </gazebo> -->
 </robot>

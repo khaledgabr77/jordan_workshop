@@ -25,7 +25,7 @@ endif()
 
 # Install the URDF files
 install(
-  DIRECTORY urdf launch worlds config models
+  DIRECTORY urdf launch worlds config models meshes rviz
   DESTINATION share/${PROJECT_NAME}/
 )
 ament_package()
