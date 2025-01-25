@@ -18,12 +18,14 @@ def generate_launch_description():
         'rviz', default_value='true',
         description='Open RViz.'
     )
+
     rviz_config_arg = DeclareLaunchArgument(
         'rviz_config', default_value='rviz1.rviz',
         description='RViz config file'
     )
+
     world_arg = DeclareLaunchArgument(
-        'world', default_value='world.sdf',
+        'world', default_value='home.sdf',
         description='Name of the Gazebo world file to load'
     )
 
@@ -31,6 +33,7 @@ def generate_launch_description():
         'model', default_value='petra_robot.urdf',
         description='Name of the URDF description to load'
     )
+
     x_arg = DeclareLaunchArgument(
         'x', default_value='2.5',
         description='x coordinate of spawned robot'
@@ -45,7 +48,14 @@ def generate_launch_description():
         'yaw', default_value='-1.5707',
         description='yaw angle of spawned robot'
     )
-
+    
+    # Generate path to config file
+    interactive_marker_config_file_path = os.path.join(
+        get_package_share_directory('interactive_marker_twist_server'),
+        'config',
+        'linear.yaml'
+    )
+    
     sim_time_arg = DeclareLaunchArgument(
         'use_sim_time', default_value='True',
         description='Flag to enable use_sim_time'
@@ -165,11 +175,39 @@ def generate_launch_description():
         package='mogi_trajectory_server',
         executable='mogi_trajectory_server',
         name='mogi_trajectory_server',
+        parameters=[{'reference_frame_id': 'map'}]
+    )
+
+    interactive_marker_twist_server_node = Node(
+        package='interactive_marker_twist_server',
+        executable='marker_server',
+        name='twist_server_node',
+        parameters=[interactive_marker_config_file_path],
+        output='screen',
+    )
+
+    # Path to the Slam Toolbox launch file
+    slam_toolbox_launch_path = os.path.join(
+        get_package_share_directory('slam_toolbox'),
+        'launch',
+        'online_async_launch.py'
+    )
+    slam_toolbox_params_path = os.path.join(
+        get_package_share_directory('petra_robot'),
+        'config',
+        'slam_toolbox_mapping.yaml'
+    )
+    slam_toolbox_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(slam_toolbox_launch_path),
+        launch_arguments={
+                'use_sim_time': LaunchConfiguration('use_sim_time'),
+                'slam_params_file': slam_toolbox_params_path,
+        }.items()
     )
     launchDescriptionObject = LaunchDescription()
 
-    launchDescriptionObject.add_action(rviz_launch_arg)
-    launchDescriptionObject.add_action(rviz_config_arg)
+    # launchDescriptionObject.add_action(rviz_launch_arg)
+    # launchDescriptionObject.add_action(rviz_config_arg)
     launchDescriptionObject.add_action(world_arg)
     launchDescriptionObject.add_action(model_arg)
     launchDescriptionObject.add_action(x_arg)
@@ -177,7 +215,7 @@ def generate_launch_description():
     launchDescriptionObject.add_action(yaw_arg)
     launchDescriptionObject.add_action(sim_time_arg)
     launchDescriptionObject.add_action(world_launch)
-    launchDescriptionObject.add_action(rviz_node)
+    # launchDescriptionObject.add_action(rviz_node)
     launchDescriptionObject.add_action(spawn_urdf_node)
     launchDescriptionObject.add_action(robot_state_publisher_node)
     # launchDescriptionObject.add_action(joint_state_publisher_gui_node)
@@ -185,5 +223,7 @@ def generate_launch_description():
     launchDescriptionObject.add_action(trajectory_node)
     launchDescriptionObject.add_action(gz_image_bridge_node)
     launchDescriptionObject.add_action(relay_camera_info_node)
+    # launchDescriptionObject.add_action(interactive_marker_twist_server_node)
+    # launchDescriptionObject.add_action(slam_toolbox_launch)
 
     return launchDescriptionObject

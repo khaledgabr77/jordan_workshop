@@ -1,206 +1,194 @@
-<?xml version="1.0"?>
+<?xml version='1.0'?>
 
 <robot name="petra_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:include filename="$(find petra_robot)/urdf/petra.gazebo" />
 
-    <link name="base_link">
-        <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <mass value="2.0"/>
-            <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
-        </inertial>
-        <visual>
-            <geometry>
-                <box size="0.4 0.3 0.08"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <material name="base_link_material">
-                <color rgba="1.0 1.0 0.0 1.0"/>
-            </material>
-        </visual>
-        <collision>
-            <geometry>
-                <box size="0.4 0.3 0.08"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-        </collision>
-    </link>
+  <!-- STEP 3 - Gazebo plugin -->
+  <xacro:include filename="$(find petra_robot)/urdf/petra_robot.gazebo" />
 
-    <link name="right_wheel">
-        <inertial>
-            <mass value="1.0"/>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-        </inertial>
-        <visual>
-            <geometry>
-                <cylinder radius="0.08" length="0.05"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <material name="wheel_material">
-                <color rgba="1.0 0.0 0.0 1.0"/>
-            </material>
-        </visual>
-        <collision>
-            <geometry>
-                <cylinder radius="0.08" length="0.05"/>
-            </geometry>
-            <origin rpy="0 0 0"/>
-        </collision>
-    </link>
+  <!-- STEP 4 - RViz colors -->
+  <xacro:include filename="$(find petra_robot)/urdf/materials.xacro" />
 
-    <joint name="right_wheel_joint" type="continuous">
-        <parent link="base_link"/>
-        <child link="right_wheel"/>
-        <origin xyz="0.1 -0.175 0.00" rpy="0 1.5708 1.5708"/>
-        <axis xyz="0 0 1"/>
-    </joint>
+  <!-- STEP 1 - Robot chassis -->
+  <link name="base_footprint"></link>
 
-    <link name="left_wheel">
-        <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <mass value="1.0"/>
-            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-        </inertial>
-        <visual>
-            <geometry>
-                <cylinder radius="0.08" length="0.05"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <material name="wheel_material">
-                <color rgba="1.0 0.0 0.0 1.0"/>
-            </material>
-        </visual>
-        <collision>
-            <geometry>
-                <cylinder radius="0.08" length="0.05"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-        </collision>
-    </link>
+  <joint name="base_footprint_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_footprint"/>
+    <child link="base_link" />
+  </joint>
 
-    <joint name="left_wheel_joint" type="continuous">
-        <parent link="base_link"/>
-        <child link="left_wheel"/>
-        <origin xyz="0.1 0.175 0.0" rpy="0 1.5708 1.5708"/>
-        <axis xyz="0 0 1"/>
-    </joint>
+  <link name='base_link'>
+    <pose>0 0 0.1 0 0 0</pose>
 
-    <link name="caster_wheel_link">
-        <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <mass value="0.5"/>
-            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-        </inertial>
-        <visual>
-            <geometry>
-                <sphere radius="0.02"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <material name="caster_material">
-                <color rgba="1.0 0.0 0.0 1.0"/>
-            </material>
-        </visual>
-        <collision>
-            <geometry>
-                <sphere radius="0.02"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-        </collision>
-    </link>
+    <inertial>
+      <mass value="15.0"/>
+      <origin xyz="0.0 0 0" rpy=" 0 0 0"/>
+      <inertia
+          ixx="0.0625" ixy="0" ixz="0"
+          iyy="0.2125" iyz="0"
+          izz="0.25"
+      />
+    </inertial>
 
-    <joint name="caster_wheel_joint" type="continuous">
-        <parent link="base_link"/>
-        <child link="caster_wheel_link"/>
-        <origin xyz="-0.1 0.0 -0.06" rpy="0.0 0.0 0.0"/>
-        <axis xyz="0 0 1"/>
-    </joint>
+    <collision name='collision'>
+      <origin xyz="0 0 0" rpy=" 0 0 0"/> 
+      <geometry>
+        <box size=".4 .2 .1"/>
+      </geometry>
+    </collision>
 
-    <link name="base_footprint"/>
+    <visual name='base_link_visual'>
+      <origin xyz="0 0 0" rpy=" 0 0 0"/>
+      <geometry>
+        <mesh filename="package://petra_robot/meshes/mogi_bot.dae" />
+      </geometry>
+    </visual>
 
-    <joint name="base_footprint_joint" type="fixed">
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
-        <parent link="base_footprint"/>
-        <child link="base_link"/>
-    </joint>
+    <collision name='rear_caster_collision'>
+      <origin xyz="-0.15 0 -0.05" rpy=" 0 0 0"/>
+      <geometry>
+        <sphere radius="0.0499"/>
+      </geometry>
+    </collision>
 
-    <link name="lidar_base_link">
-        <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <mass value="0.5"/>
-            <inertia ixx="0.0008667" ixy="0.0" ixz="0.0" iyy="0.0016000" iyz="0.0" izz="0.0017333"/>
-        </inertial>
-        <visual>
-            <geometry>
-                <box size="0.1 0.2 0.07"/>
-            </geometry>
-            <origin xyz="0 0 0.0"/>
-            <material name="lidar_base_material">
-                <color rgba="1.0 1.0 0.0 1.0"/>
-            </material>
-        </visual>
-        <collision>
-            <geometry>
-                <box size="0.2 0.2 0.07"/>
-            </geometry>
-            <origin xyz="0 0 0.0"/>
-        </collision>
-    </link>
+    <visual name='rear_caster_visual'>
+      <origin xyz="-0.15 0 -0.05" rpy=" 0 0 0"/>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </visual>
 
-    <joint name="lidar_base_joint" type="fixed">
-        <parent link="base_link"/>
-        <child link="lidar_base_link"/>
-        <origin xyz="-0.1 0 0.06" rpy="0 0 0"/>
-    </joint>
+    <collision name='front_caster_collision'>
+      <origin xyz="0.15 0 -0.05" rpy=" 0 0 0"/>
+      <geometry>
+        <sphere radius="0.0499"/>
+      </geometry>
+    </collision>
 
-    <link name="lidar_link">
-      <inertial>
-        <mass value="1e-5"/>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <inertia
-            ixx="1e-6" ixy="0" ixz="0"
-            iyy="1e-6" iyz="0"
-            izz="1e-6"
-        />
-      </inertial>
-        <visual name='scan_link_visual'>
-            <geometry>
-                <mesh filename="package://petra_robot/meshes/2d_lidar.STL"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0"/>
-            <material name="lidar_material">
-                <color rgba="0.0 0.0 0.0 1.0"/>
-            </material>
-        </visual>
-        <collision name='collision'>
-            <geometry>
-                <mesh filename="package://petra_robot/meshes/2d_lidar.STL"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-        </collision>
-    </link>
+    <visual name='front_caster_visual'>
+      <origin xyz="0.15 0 -0.05" rpy=" 0 0 0"/>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </visual>
 
-    <joint name="lidar_joint" type="fixed">
-        <parent link="lidar_base_link"/>
-        <child link="lidar_link"/>
-        <origin xyz="0 0 0.065" rpy="0 0 0"/>
-    </joint>
-    <gazebo reference="lidar_link">
-      <selfCollide>false</selfCollide>
-      <mu1 value="0.05" />
-      <mu2 value="0.05" />
-    </gazebo>
+  </link>
 
-    <link name="camera_link">
-      <pose>0 0 0 0 0 0</pose>
+  <!-- STEP 2 - Wheels -->
+  <joint type="continuous" name="left_wheel_joint">
+    <origin xyz="0 0.15 0" rpy="0 0 0"/>
+    <child link="left_wheel"/>
+    <parent link="base_link"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="100" velocity="10"/>
+    <dynamics damping="1.0" friction="1.0"/>
+  </joint>
+
+  <link name='left_wheel'>
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <inertia
+          ixx="0.014" ixy="0" ixz="0"
+          iyy="0.014" iyz="0"
+          izz="0.025"
+      />
+    </inertial>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/> 
+      <geometry>
+        <cylinder radius=".1" length=".05"/>
+      </geometry>
+    </collision>
+
+    <visual name='left_wheel_visual'>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <mesh filename = "package://petra_robot/meshes/wheel.dae"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint type="continuous" name="right_wheel_joint">
+    <origin xyz="0 -0.15 0" rpy="0 0 0"/>
+    <child link="right_wheel"/>
+    <parent link="base_link"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="100" velocity="10"/>
+    <dynamics damping="1.0" friction="1.0"/>
+  </joint>
+
+  <link name='right_wheel'>
+    <inertial>
+      <mass value="5.0"/>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <inertia
+          ixx="0.014" ixy="0" ixz="0"
+          iyy="0.014" iyz="0"
+          izz="0.025"
+      />
+    </inertial>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/> 
+      <geometry>
+        <cylinder radius=".1" length=".05"/>
+      </geometry>
+    </collision>
+
+    <visual name='right_wheel_visual'>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <geometry>
+        <mesh filename = "package://petra_robot/meshes/wheel.dae"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- STEP 4 - Gazebo frictions and colors -->
+  <gazebo reference="left_wheel">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.0001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+
+  <gazebo reference="right_wheel">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <minDepth>0.0001</minDepth>
+    <maxVel>1.0</maxVel>
+  </gazebo>
+
+  <gazebo reference="base_link">
+    <mu1>0.000002</mu1>
+    <mu2>0.000002</mu2>
+  </gazebo>
+
+  <!-- Camera -->
+  <joint type="fixed" name="camera_joint">
+    <origin xyz="0.225 0 0.075" rpy="0 0 0"/>
+    <child link="camera_link"/>
+    <parent link="base_link"/>
+    <axis xyz="0 1 0" />
+  </joint>
+
+  <link name='camera_link'>
+    <pose>0 0 0 0 0 0</pose>
     <inertial>
       <mass value="0.1"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <inertia
           ixx="1e-6" ixy="0" ixz="0"
           iyy="1e-6" iyz="0"
-          izz="1e-6"/>
+          izz="1e-6"
+      />
     </inertial>
+
     <collision name='collision'>
       <origin xyz="0 0 0" rpy="0 0 0"/> 
       <geometry>
@@ -214,43 +202,71 @@
         <box size=".03 .03 .03"/>
       </geometry>
     </visual>
-    </link>
 
-    <joint name="camera_joint" type="fixed"> 
-      <origin xyz="0.2 0 0.05" rpy="0 0 0"/>
-      <child link="camera_link"/>
-      <parent link="base_link"/>
-      <axis xyz="0 1 0" />
-    </joint>
+  </link>
 
-    <joint type="fixed" name="camera_optical_joint">
-        <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
-        <child link="camera_link_optical"/>
-        <parent link="camera_link"/>
-    </joint>
+  <gazebo reference="camera_link">
+    <material>Gazebo/Red</material>
+  </gazebo>
 
-    <link name="camera_link_optical">
-    </link>
-    <!-- <gazebo reference="left_wheel">
-        <mu1>0.2</mu1>
-        <mu2>0.2</mu2>
-        <kp>1000000.0</kp>
-        <kd>100.0</kd>
-        <minDepth>0.0001</minDepth>
-        <maxVel>1.0</maxVel>
-    </gazebo>
+  <joint type="fixed" name="camera_optical_joint">
+    <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+    <child link="camera_link_optical"/>
+    <parent link="camera_link"/>
+  </joint>
 
-    <gazebo reference="right_wheel">
-        <mu1>0.2</mu1>
-        <mu2>0.2</mu2>
-        <kp>1000000.0</kp>
-        <kd>100.0</kd>
-        <minDepth>0.0001</minDepth>
-        <maxVel>1.0</maxVel>
-    </gazebo>
+  <link name="camera_link_optical">
+  </link>
 
-    <gazebo reference="base_link">
-        <mu1>0.000002</mu1>
-        <mu2>0.000002</mu2>
-    </gazebo> -->
+  <!-- IMU -->
+  <joint name="imu_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link"/>
+    <child link="imu_link" />
+  </joint>
+
+  <link name="imu_link">
+  </link>
+
+
+  <!-- Lidar -->
+  <joint type="fixed" name="scan_joint">
+    <origin xyz="0.0 0 0.15" rpy="0 0 0"/>
+    <child link="scan_link"/>
+    <parent link="base_link"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+  </joint>
+
+  <link name='scan_link'>
+    <inertial>
+      <mass value="1e-5"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia
+          ixx="1e-6" ixy="0" ixz="0"
+          iyy="1e-6" iyz="0"
+          izz="1e-6"
+      />
+    </inertial>
+    <collision name='collision'>
+      <origin xyz="0 0 0" rpy="0 0 0"/> 
+      <geometry>
+        <box size=".1 .1 .1"/>
+      </geometry>
+    </collision>
+
+    <visual name='scan_link_visual'>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename = "package://petra_robot/meshes/lidar.dae"/>
+      </geometry>
+    </visual>
+
+  </link>
+
+  <gazebo reference="scan_link">
+    <selfCollide>false</selfCollide>
+    <mu1 value="0.05" />
+    <mu2 value="0.05" />
+  </gazebo>
+
 </robot>
