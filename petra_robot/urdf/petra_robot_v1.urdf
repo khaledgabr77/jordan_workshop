@@ -24,28 +24,7 @@
             </geometry>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
         </collision>
-        <!-- <link name="caster_wheel_link"> -->
-        <!-- <inertial>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <mass value="0.5"/>
-            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
-        </inertial> -->
-        <visual>
-            <geometry>
-                <sphere radius="0.02"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-            <material name="caster_material">
-                <color rgba="1.0 0.0 0.0 1.0"/>
-            </material>
-        </visual>
-        <collision>
-            <geometry>
-                <sphere radius="0.02"/>
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-        </collision>
-    <!-- </link> -->
+
     </link>
 
     <link name="right_wheel">
@@ -108,14 +87,35 @@
         <axis xyz="0 0 1"/>
     </joint>
 
+    <link name="caster_wheel_link">
+      <inertial>
+          <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+          <mass value="0.5"/>
+          <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      </inertial>
+      <visual>
+          <geometry>
+              <sphere radius="0.02"/>
+          </geometry>
+          <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+          <material name="caster_material">
+              <color rgba="1.0 0.0 0.0 1.0"/>
+          </material>
+      </visual>
+      <collision>
+          <geometry>
+              <sphere radius="0.02"/>
+          </geometry>
+          <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      </collision>
+    </link>
 
-
-    <!-- <joint name="caster_wheel_joint" type="continuous">
+    <joint name="caster_wheel_joint" type="continuous">
         <parent link="base_link"/>
         <child link="caster_wheel_link"/>
         <origin xyz="-0.1 0.0 -0.06" rpy="0.0 0.0 0.0"/>
         <axis xyz="0 0 1"/>
-    </joint> -->
+    </joint>
 
     <link name="base_footprint"/>
 

@@ -253,7 +253,7 @@
     </joint>
 
     <link name="camera_link">
-      <pose relative_to="base_link">-0.2 0 0.03 0 0 0</pose>
+      <pose relative_to="base_link">0.2 0 0.03 0 0 0</pose>
       <inertial>
         <mass>0.5</mass>
         <inertia>
@@ -296,16 +296,29 @@
         </camera>
         <!-- Set frame ID appropriately, typically 'camera_link' -->
         <gz_frame_id>camera_link</gz_frame_id>
+        <optical_frame_id>camera_link_optical</optical_frame_id>
         <always_on>1</always_on>
         <update_rate>10</update_rate>
         <visualize>1</visualize>
         <topic>rgb_image</topic>
       </sensor>
     </link>
+    
     <joint name="camera_joint" type="fixed">
       <parent>base_link</parent>
       <child>camera_link</child>
     </joint>
+
+    <joint name="camera_optical_joint" type="fixed" >
+      <!-- <pose>0 0 0 -1.5707 0 -1.5707</pose> -->
+      <pose>0 0 0 0 0 0</pose>
+      <parent>camera_link</parent>
+      <child>camera_link_optical</child>
+    </joint>
+
+    <link name="camera_link_optical">
+    </link>
+
 
     <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
         <topic>cmd_vel</topic> <!-- Topic for velocity commands to control the robot -->
