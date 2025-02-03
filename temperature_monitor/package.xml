@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>temperature_monitor</name>
+  <version>0.0.0</version>
+  <description>Quiz: ROS 2 Temperature Publisher/Subscriber</description>
+  <maintainer email="your_email@example.com">Your Name</maintainer>
+  <license>Apache License 2.0</license>
+
+  <!-- TODO: Build tool dependencies -->
+
+
+  <!-- TODO: Runtime dependencies -->
+
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
