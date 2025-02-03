@@ -1,0 +1,256 @@
+# 1. Create a New ROS 2 Package
+
+In a ROS 2 workspace (e.g., `~/jordan_ws/src`), create a new package called `temperature_monitor`:
+
+```bash
+cd ~/jordan_ws/src
+ros2 pkg create --build-type ament_cmake temperature_monitor
+```
+
+This will create a `temperature_monitor` folder containing a `CMakeLists.txt` and a `package.xml`.
+
+---
+
+## 2. Update `package.xml`
+
+Open the `package.xml` file and make sure it has (at least) the following dependencies:
+
+```xml
+<?xml version="1.0"?>
+<package format="2">
+  <name>temperature_monitor</name>
+  <version>0.0.0</version>
+  <description>ROS 2 package demonstrating publisher/subscriber with temperature data</description>
+  <maintainer email="you@example.com">Your Name</maintainer>
+  <license>Apache License 2.0</license>
+
+  <!-- Build tool dependencies -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Run-time dependencies (rclcpp, sensor_msgs, etc.) -->
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+```
+
+---
+
+## 3. Update `CMakeLists.txt`
+
+Open `CMakeLists.txt` and make sure you have:
+
+```cmake
+cmake_minimum_required(VERSION 3.8)
+project(temperature_monitor)
+
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)  # for sensor_msgs/msg/Temperature
+find_package(std_msgs REQUIRED)
+
+add_executable(temperature_publisher src/temperature_publisher.cpp)
+ament_target_dependencies(temperature_publisher rclcpp sensor_msgs)
+
+add_executable(temperature_subscriber src/temperature_subscriber.cpp)
+ament_target_dependencies(temperature_subscriber rclcpp sensor_msgs)
+
+install(TARGETS
+  temperature_publisher
+  temperature_subscriber
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_package()
+```
+
+> **Note**: We are creating two executables: `temperature_publisher` and `temperature_subscriber`.
+
+---
+
+## 4. Create the Publisher Node (C++)
+
+Create a file called `temperature_publisher.cpp` inside the `src` folder of your package:
+
+```
+temperature_monitor
+├── CMakeLists.txt
+├── package.xml
+└── src
+    ├── temperature_publisher.cpp
+    └── temperature_subscriber.cpp
+```
+
+```cpp
+#include <chrono>
+#include <memory>
+#include <random>
+
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/temperature.hpp"
+
+using namespace std::chrono_literals;
+
+class TemperatureSensorNode : public rclcpp::Node
+{
+public:
+  TemperatureSensorNode()
+  : Node("temperature_sensor_node"), generator_(rd_()), distribution_(15.0, 25.0)
+  {
+    // Create a publisher for Temperature messages on the 'temperature' topic
+    publisher_ = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
+
+    // Create a timer to publish temperature readings every second
+    timer_ = this->create_wall_timer(
+      1000ms, std::bind(&TemperatureSensorNode::publishTemperature, this));
+  }
+
+private:
+  void publishTemperature()
+  {
+    // Mimic reading from a real sensor by generating a random temperature
+    double random_temp = distribution_(generator_);
+
+    auto message = sensor_msgs::msg::Temperature();
+    message.temperature = random_temp;  // Fill in the temperature
+    message.variance = 0.2;             // A small variance, just as an example
+
+    // For demonstration, we can pretend the header stamp is "now"
+    message.header.stamp = this->now();
+
+    // Publish the message
+    RCLCPP_INFO(this->get_logger(), "Publishing: %.2f °C", message.temperature);
+    publisher_->publish(message);
+  }
+
+  rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+
+  // Random temperature generation
+  std::random_device rd_;
+  std::mt19937 generator_;
+  std::uniform_real_distribution<double> distribution_;
+};
+
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<TemperatureSensorNode>());
+  rclcpp::shutdown();
+  return 0;
+}
+```
+
+### Explanation
+1. We create a node called `"temperature_sensor_node"`.
+2. We set up a publisher to the topic named `"temperature"` using the message type `sensor_msgs::msg::Temperature`.
+3. We use a `std::uniform_real_distribution` to generate random temperature values between 15.0°C and 25.0°C (just an example range).
+4. We publish at a 1 Hz rate (every 1 second).
+
+---
+
+## 5. Create the Subscriber Node (C++)
+
+Next, create the file `temperature_subscriber.cpp` in the `src` folder:
+
+```cpp
+#include <memory>
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/temperature.hpp"
+
+class TemperatureMonitorNode : public rclcpp::Node
+{
+public:
+  TemperatureMonitorNode()
+  : Node("temperature_monitor_node")
+  {
+    // Create a subscription to the 'temperature' topic
+    subscription_ = this->create_subscription<sensor_msgs::msg::Temperature>(
+      "temperature", 
+      10, 
+      std::bind(&TemperatureMonitorNode::topicCallback, this, std::placeholders::_1));
+  }
+
+private:
+  void topicCallback(const sensor_msgs::msg::Temperature::SharedPtr msg)
+  {
+    RCLCPP_INFO(this->get_logger(), 
+                "Received temperature: %.2f °C (variance: %.2f)", 
+                msg->temperature, 
+                msg->variance);
+  }
+
+  rclcpp::Subscription<sensor_msgs::msg::Temperature>::SharedPtr subscription_;
+};
+
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<TemperatureMonitorNode>());
+  rclcpp::shutdown();
+  return 0;
+}
+```
+
+### Explanation
+1. We create a node named `"temperature_monitor_node"`.
+2. We set up a subscription to the `"temperature"` topic with a queue size of 10.
+3. Whenever a new `sensor_msgs::msg::Temperature` message arrives, we log its temperature and variance.
+
+---
+
+## 6. Build the Package
+
+From the root of your workspace (e.g., `~/jordan_ws`):
+
+```bash
+cd ~/jordan_ws
+colcon build --packages-select temperature_monitor
+```
+
+Once built successfully, **source** your workspace:
+
+```bash
+source install/setup.bash
+```
+
+---
+
+## 7. Run the Nodes
+
+Open one terminal to run the **publisher**:
+
+```bash
+ros2 run temperature_monitor temperature_publisher
+```
+
+Open a second terminal (after sourcing the same workspace) to run the **subscriber**:
+
+```bash
+ros2 run temperature_monitor temperature_subscriber
+```
+
+You should see output similar to the following:
+
+- **Publisher Node** (Terminal 1):
+  ```
+  [INFO] [1671234567.12345] [temperature_sensor_node]: Publishing: 17.53 °C
+  [INFO] [1671234568.12345] [temperature_sensor_node]: Publishing: 19.12 °C
+  [INFO] [1671234569.12345] [temperature_sensor_node]: Publishing: 20.76 °C
+  ...
+  ```
+
+- **Subscriber Node** (Terminal 2):
+  ```
+  [INFO] [1671234567.54321] [temperature_monitor_node]: Received temperature: 17.53 °C (variance: 0.20)
+  [INFO] [1671234568.54321] [temperature_monitor_node]: Received temperature: 19.12 °C (variance: 0.20)
+  [INFO] [1671234569.54321] [temperature_monitor_node]: Received temperature: 20.76 °C (variance: 0.20)
+  ...
+  ```
+
+---

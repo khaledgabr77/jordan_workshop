@@ -1,0 +1,20 @@
+cmake_minimum_required(VERSION 3.8)
+project(area_service)
+
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(area_interfaces REQUIRED)
+
+add_executable(area_server src/area_server.cpp)
+ament_target_dependencies(area_server rclcpp area_interfaces)
+
+add_executable(area_client src/area_client.cpp)
+ament_target_dependencies(area_client rclcpp area_interfaces)
+
+install(TARGETS
+  area_server
+  area_client
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_package()

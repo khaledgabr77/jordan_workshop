@@ -1,0 +1,31 @@
+#include "rclcpp/rclcpp.hpp"
+#include "area_interfaces/srv/calculate_area.hpp"
+
+using std::placeholders::_1;
+using std::placeholders::_2;
+
+class AreaService : public rclcpp::Node {
+public:
+    AreaService() : Node("area_service_server") {
+        service_ = this->create_service<area_interfaces::srv::CalculateArea>(
+            "calculate_area", std::bind(&AreaService::compute_area, this, _1, _2));
+        RCLCPP_INFO(this->get_logger(), "Service Server Ready: calculate_area");
+    }
+
+private:
+    void compute_area(const std::shared_ptr<area_interfaces::srv::CalculateArea::Request> request,
+                      std::shared_ptr<area_interfaces::srv::CalculateArea::Response> response) {
+        response->area = request->length * request->width;
+        RCLCPP_INFO(this->get_logger(), "Received request - Length: %.2f, Width: %.2f. Computed Area: %.2f",
+                    request->length, request->width, response->area);
+    }
+
+    rclcpp::Service<area_interfaces::srv::CalculateArea>::SharedPtr service_;
+};
+
+int main(int argc, char **argv) {
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<AreaService>());
+    rclcpp::shutdown();
+    return 0;
+}

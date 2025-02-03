@@ -1,0 +1,57 @@
+#include <chrono>
+#include <memory>
+#include <random>
+
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/temperature.hpp"
+
+using namespace std::chrono_literals;
+
+class TemperatureSensorNode : public rclcpp::Node
+{
+public:
+  TemperatureSensorNode()
+  : Node("temperature_sensor_node"), generator_(rd_()), distribution_(15.0, 25.0)
+  {
+    // Create a publisher for Temperature messages on the 'temperature' topic
+    publisher_ = this->create_publisher<sensor_msgs::msg::Temperature>("temperature", 10);
+
+    // Create a timer to publish temperature readings every second
+    timer_ = this->create_wall_timer(
+      1000ms, std::bind(&TemperatureSensorNode::publishTemperature, this));
+  }
+
+private:
+  void publishTemperature()
+  {
+    // Mimic reading from a real sensor by generating a random temperature
+    double random_temp = distribution_(generator_);
+
+    auto message = sensor_msgs::msg::Temperature();
+    message.temperature = random_temp;  // Fill in the temperature
+    message.variance = 0.2;             // A small variance, just as an example
+
+    // For demonstration, we can pretend the header stamp is "now"
+    message.header.stamp = this->now();
+
+    // Publish the message
+    RCLCPP_INFO(this->get_logger(), "Publishing: %.2f °C", message.temperature);
+    publisher_->publish(message);
+  }
+
+  rclcpp::Publisher<sensor_msgs::msg::Temperature>::SharedPtr publisher_;
+  rclcpp::TimerBase::SharedPtr timer_;
+
+  // Random temperature generation
+  std::random_device rd_;
+  std::mt19937 generator_;
+  std::uniform_real_distribution<double> distribution_;
+};
+
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<TemperatureSensorNode>());
+  rclcpp::shutdown();
+  return 0;
+}

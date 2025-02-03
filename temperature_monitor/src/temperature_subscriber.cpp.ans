@@ -1,0 +1,36 @@
+#include <memory>
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/temperature.hpp"
+
+class TemperatureMonitorNode : public rclcpp::Node
+{
+public:
+  TemperatureMonitorNode()
+  : Node("temperature_monitor_node")
+  {
+    // Create a subscription to the 'temperature' topic
+    subscription_ = this->create_subscription<sensor_msgs::msg::Temperature>(
+      "temperature", 
+      10, 
+      std::bind(&TemperatureMonitorNode::topicCallback, this, std::placeholders::_1));
+  }
+
+private:
+  void topicCallback(const sensor_msgs::msg::Temperature::SharedPtr msg)
+  {
+    RCLCPP_INFO(this->get_logger(), 
+                "Received temperature: %.2f °C (variance: %.2f)", 
+                msg->temperature, 
+                msg->variance);
+  }
+
+  rclcpp::Subscription<sensor_msgs::msg::Temperature>::SharedPtr subscription_;
+};
+
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<TemperatureMonitorNode>());
+  rclcpp::shutdown();
+  return 0;
+}

@@ -1,0 +1,34 @@
+#include "rclcpp/rclcpp.hpp"
+#include "area_interfaces/srv/calculate_area.hpp"
+
+class AreaClient : public rclcpp::Node {
+public:
+    AreaClient() : Node("area_service_client") {
+        client_ = this->create_client<area_interfaces::srv::CalculateArea>("calculate_area");
+
+        while (!client_->wait_for_service(std::chrono::seconds(1))) {
+            RCLCPP_WARN(this->get_logger(), "Waiting for service...");
+        }
+
+        auto request = std::make_shared<area_interfaces::srv::CalculateArea::Request>();
+        request->length = 5.0;
+        request->width = 3.0;
+
+        auto future = client_->async_send_request(request, 
+            std::bind(&AreaClient::response_callback, this, std::placeholders::_1));
+    }
+
+private:
+    void response_callback(rclcpp::Client<area_interfaces::srv::CalculateArea>::SharedFuture future) {
+        RCLCPP_INFO(this->get_logger(), "Area received: %.2f", future.get()->area);
+    }
+
+    rclcpp::Client<area_interfaces::srv::CalculateArea>::SharedPtr client_;
+};
+
+int main(int argc, char **argv) {
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<AreaClient>());
+    rclcpp::shutdown();
+    return 0;
+}
