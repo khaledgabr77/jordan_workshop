@@ -3,7 +3,7 @@
 <robot name="petra_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <!-- STEP 3 - Gazebo plugin -->
-  <xacro:include filename="$(find petra_robot)/urdf/petra_robot.gazebo" />
+  <xacro:include filename="$(find petra_robot)/urdf/petra_robot_v2.gazebo" />
 
   <!-- STEP 4 - RViz colors -->
   <xacro:include filename="$(find petra_robot)/urdf/materials.xacro" />
